@@ -1,0 +1,373 @@
+openapi: 3.0.0
+info:
+  description: This is a sample server for the Depositaria project.
+  version: 1.0.0
+  title: Swagger Depositaria
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: apiteam@swagger.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+tags:
+- name: CDCA
+  description: Everything about CDCAs
+paths:
+  /issue-simplified/:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                admAgents:
+                  $ref: '#/components/schemas/administrativeAgents'
+                creditors:
+                  $ref: '#/components/schemas/creditors'
+                agentInfo:
+                  $ref: '#/components/schemas/agentInfo'
+                portfoliosInfo:
+                  $ref: '#/components/schemas/portfoliosInfo'
+                paymentInfo:
+                  $ref: '#/components/schemas/paymentInfo'
+                assetInfo:
+                  $ref: '#/components/schemas/assetInfo'
+                installments:
+                  $ref: '#/components/schemas/installments'
+                CDCAInfo:
+                  $ref: '#/components/schemas/CDCAInfo'
+      responses:
+        '200':
+          description: OK
+components:
+  schemas:
+    assetInfo:
+      type: object
+      properties:
+        assetType:
+          type: string
+          default: CDCA
+          enum:
+          - CDCA
+        wallet:
+          type: string
+      required:
+      - assetType
+    agentInfo:
+      type: object
+      properties:
+        issuerName:
+          type: string
+        issuerDocument:
+          type: string
+        issuerMobileNumber:
+          type: string
+        issuerEmail:
+          type: string
+        issuerPayAddress:
+          type: object
+          properties:
+            bank:
+              type: string
+            agency:
+              type: object
+              properties:
+                digit:
+                  type: string
+                number:
+                  type: string
+            account:
+              type: object
+              properties:
+                digit:
+                  type: string
+                number:
+                  type: string
+            uf:
+              type: string
+            city:
+              type: string
+      required:
+      - issuerName
+      - issuerDocument
+      - issuerEmail
+    paymentInfo:
+      type: object
+      properties:
+        beneficiaryAccount:
+          type: string
+        beneficiaryDocument:
+          type: object
+          properties:
+            type:
+              type: string
+              enum:
+              - CNPJ
+              - CPF
+            number:
+              type: string
+          required:
+          - type
+          - number
+        depositReference:
+          type: string
+        settlementCode:
+          type: string
+        modality:
+          type: string
+          enum:
+          - SEM MODALIDADE DE LIQUIDAÇÃO
+          - BRUTA
+        formOfPayment:
+          type: string
+          enum:
+          - PAGAMENTO DE VALOR CALCULADO PELO EMISSOR
+          - PAGAMENTO AO FINAL
+          - AMORTIZAÇÃO PERIÓDICA E JUROS NO VENCIMENTO
+          - JUROS E AMORTIZAÇÃO PERIÓDICOS
+          - JUROS E PRINCIPAL NO VENCIMENTO
+          - PERIÓDICO DE JUROS E PRINCIPAL NO VENCIMENTO
+      required:
+      - beneficiaryAccount
+      - beneficiaryDocument
+      - depositReference
+      - settlementCode
+      - modality
+      - formOfPayment
+    administrativeAgents:
+      type: array
+      items:
+        type: object
+        properties:
+          agentType:
+            type: string
+            enum:
+            - ADMINISTRADOR
+            - CUSTODIANTE
+          agentDocument:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                - CPF
+                - CNPJ
+              number:
+                type: string
+            required:
+            - type
+            - number
+        required:
+        - agentType
+        - agentDocument
+    installments:
+      type: array
+      items:
+        type: object
+        properties:
+          installmentID:
+            type: string
+          dueDate:
+            type: string
+          installmentPriceInCents:
+            type: integer
+          mainInstallmentPriceInCents:
+            type: integer
+          installmentNumber:
+            type: integer
+        required:
+        - installmentID
+        - dueDate
+        - installmentPriceInCents
+        - mainInstallmentPriceInCents
+        - installmentNumber
+    creditors:
+      type: array
+      items:
+        type: object
+        properties:
+          creditorDocument:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                - CPF
+                - CNPJ
+              number:
+                type: string
+          creditorEmail:
+            type: string
+          creditorPayAddress:
+            type: object
+            properties:
+              bank:
+                type: string
+              agency:
+                type: object
+                properties:
+                  digit:
+                    type: string
+                  number:
+                    type: string
+                required:
+                - digit
+                - number
+              account:
+                type: object
+                properties:
+                  digit:
+                    type: string
+                  number:
+                    type: string
+                required:
+                - digit
+                - number
+              accountType:
+                type: string
+                enum:
+                - CORRENTE
+                - POUPANÇA
+              holderName:
+                type: string
+              compe:
+                type: string
+              ispb:
+                type: string
+              holderDocument:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    enum:
+                    - CPF
+                    - CNPJ
+                  number:
+                    type: string
+                required:
+                - type
+                - number
+            required:
+            - bank
+            - agency
+            - account
+            - accountType
+            - holderName
+            - compe
+            - ispb
+            - holderDocument
+        required:
+        - creditorDocument
+        - creditorEmail
+    portfoliosInfo:
+      type: array
+      items:
+        type: object
+        properties:
+          backingPortfolioID:
+            type: string
+          backingPortfolioExternalReference:
+            type: string
+        required:
+        - backingPortfolioID
+    CDCAInfo:
+      type: object
+      properties:
+        externalReference:
+          type: string
+        IPOC:
+          type: string
+        creditContractOperationID:
+          type: string
+        contractDate:
+          type: string
+        contractQuantityInstallments:
+          type: integer
+        indexer:
+          type: string
+          enum:
+          - PRE
+          - DI
+          - SELIC
+          - IPCA
+          - IGP-M
+        interestRates:
+          type: number
+        liquidCreditPriceInCents:
+          type: integer
+        referencePriceInCents:
+          type: integer
+        SCRContractID:
+          type: string
+        indexPercentage:
+          type: number
+        currencyCode:
+          type: string
+        operationNature:
+          type: string
+        issueLocation:
+          type: string
+        dueDate:
+          type: string
+        remuneration:
+          type: number
+        nominalPriceInCents:
+          type: integer
+        referenceIDBacen:
+          type: string
+        finality:
+          type: string
+          enum:
+          - CUSTEIO
+          - INVESTIMENTO
+          - COMERCIALIZAÇão
+          - NÃO SE APLICA
+        correctionPeriodicity:
+          type: string
+          enum:
+          - ANUAL - COM BASE NA DATA DE EMISSÃO
+          - ANUAL - COM BASE NA DATA DE VENCIMENTO
+        correctionProRata:
+          type: string
+          enum:
+          - DIA CORRIDO
+          - ÚTIL
+        interestCalculation:
+          type: string
+          enum:
+          - 252 - DIAS ÚTEIS
+          - 252 - MESES X 21
+          - 360 - DIAS CORRIDOS
+          - 360 - MESES X 30
+          - 365 - DIAS CORRIDOS
+          - 365 - MESES X 30
+        debtorDocument:
+          type: object
+          properties:
+            type:
+              type: string
+              enum:
+              - CNPJ
+              - CPF
+            number:
+              type: string
+          required:
+          - type
+          - number
+      required:
+      - externalReference
+      - IPOC
+      - creditContractOperationID
+      - contractDate
+      - contractQuantityInstallments
+      - referencePriceInCents
+      - issueLocation
+      - remuneration
+      - nominalPriceInCents
+      - finality
+      - correctionPeriodicity
+      - correctionProRata
+      - interestCalculation
+      - debtorDocument
